@@ -108,11 +108,12 @@ fi
 if (YesNoBox '([title]="Install GApps" [text]="Do you want to install GApps?")'); then
     # GAPPS_BRAND=$(
     #     Radiolist '([title]="Which GApps do you want to install?"
-    #                 [default]="MindTheGapps")' \
-    #         'MindTheGapps' "Recommend" 'on' \
+    #                 [default]="LiteGapps")' \
+    #         'LiteGapps' "GApps provided by LiteGapps" 'on' \
+    #         'MindTheGapps' "GApps provided by MindTheGapps" 'off' \
     #         'OpenGApps' "This flavor may cause startup failure" 'off'
     # )
-    GAPPS_BRAND="MindTheGapps"
+    GAPPS_BRAND="LiteGapps"
 else
     GAPPS_BRAND="none"
 fi
@@ -142,6 +143,32 @@ fi
 
 if (YesNoBox '([title]="Remove Amazon Appstore" [text]="Do you want to remove Amazon Appstore?")' no); then
     COMMAND_LINE+=(--remove-amazon)
+
+if [ "$GAPPS_BRAND" = "LiteGapps" ]; then
+    if [ "$DEBUG" = "1" ]; then
+        GAPPS_VARIANT=$(
+            Radiolist '([title]="Variants of GApps"
+                        [default]="lite")' \
+                'pixel' "" 'off' \
+                'micro' "" 'off' \
+                'nano' "" 'off' \
+                'basic' "" 'off' \
+                'user' "" 'off' \
+                'go' "" 'off' \
+                'core' "" 'off' \
+                'lite' "" 'on'
+        )
+    else
+        GAPPS_VARIANT=""
+    fi
+else
+    GAPPS_VARIANT=""
+fi
+
+if (YesNoBox '([title]="Remove Amazon Appstore" [text]="Do you want to keep Amazon Appstore?")'); then
+    REMOVE_AMAZON=""
+else
+    REMOVE_AMAZON="--remove-amazon"
 fi
 
 if (YesNoBox '([title]="Compress output" [text]="Do you want to compress the output?")'); then
