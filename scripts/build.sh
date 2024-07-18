@@ -793,6 +793,11 @@ on post-fs-data
     mount none /debug_ramdisk /dev/debug_ramdisk_mirror bind
     mount none none /dev/debug_ramdisk_mirror private
     mount tmpfs magisk /debug_ramdisk mode=0755
+EOF
+
+add_magisk_lines() {
+    if [ -f "$WORK_DIR/magisk/magisk64" ]; then
+        sudo tee -a "$SYSTEM_MNT/etc/init/hw/init.rc" <<EOF >/dev/null
     copy /dev/debug_ramdisk_mirror/magisk64 /debug_ramdisk/magisk64
     chmod 0755 /debug_ramdisk/magisk64
     symlink ./magisk64 /debug_ramdisk/magisk
@@ -801,6 +806,22 @@ on post-fs-data
     start adbd
     copy /dev/debug_ramdisk_mirror/magisk32 /debug_ramdisk/magisk32
     chmod 0755 /debug_ramdisk/magisk32
+EOF
+    else
+        sudo tee -a "$SYSTEM_MNT/etc/init/hw/init.rc" <<EOF >/dev/null
+    copy /dev/debug_ramdisk_mirror/magisk /debug_ramdisk/magisk
+    chmod 0755 /debug_ramdisk/magisk
+    symlink ./magisk /debug_ramdisk/magisk
+    symlink ./magisk /debug_ramdisk/su
+    symlink ./magisk /debug_ramdisk/resetprop
+    start adbd
+EOF
+    fi
+}
+
+add_magisk_lines
+
+sudo tee -a "$SYSTEM_MNT/etc/init/hw/init.rc" <<EOF >/dev/null
     copy /dev/debug_ramdisk_mirror/magiskinit /debug_ramdisk/magiskinit
     chmod 0750 /debug_ramdisk/magiskinit
     copy /dev/debug_ramdisk_mirror/magiskpolicy /debug_ramdisk/magiskpolicy
