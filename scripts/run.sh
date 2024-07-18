@@ -41,8 +41,12 @@ function Radiolist {
 
 function YesNoBox {
     declare -A o="$1"
+    local default
+    [ "$2" ] && {
+        [ "$2" = "no" ] && default="--defaultno"
+    }
     shift
-    $DIALOG --title "${o[title]}" --yesno "${o[text]}" 0 0
+    $DIALOG --title "${o[title]}" $default --yesno "${o[text]}" 0 0
 }
 
 function DialogBox {
@@ -134,10 +138,8 @@ else
     GAPPS_VARIANT=""
 fi
 
-if (YesNoBox '([title]="Remove Amazon Appstore" [text]="Do you want to keep Amazon Appstore?")'); then
-    REMOVE_AMAZON=""
-else
-    REMOVE_AMAZON="--remove-amazon"
+if (YesNoBox '([title]="Remove Amazon Appstore" [text]="Do you want to remove Amazon Appstore?")' no); then
+    COMMAND_LINE+=(--remove-amazon)
 fi
 
 if (YesNoBox '([title]="Compress output" [text]="Do you want to compress the output?")'); then
